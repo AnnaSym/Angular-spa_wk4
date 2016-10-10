@@ -1,51 +1,43 @@
 (function () {
-'use strict';
+  'use strict';
+  angular.module('MenuApp')
+  .config(RoutesConfig);
 
-angular.module('MenuApp')
-.config(RoutesConfig);
+  RoutesConfig.$inject = ['$stateProvider', '$urlRouterProvider'];
+  function RoutesConfig($stateProvider, $urlRouterProvider) {
+    $urlRouterProvider.otherwise('/');
 
-RoutesConfig.$inject = ['$stateProvider', '$urlRouterProvider'];
-function RoutesConfig($stateProvider, $urlRouterProvider) {
+    $stateProvider
+    .state('home', {
+      url: '/',
+      templateUrl: 'src/menuapp/templates/home.template.html'
+    })
 
-  // Redirect to home page if no other URL matches
-  $urlRouterProvider.otherwise('/');
+    .state('categories', {
+              url: '/categories',
+              templateUrl: 'src/menuapp/templates/categories.template.html',
+              controller: 'CategoriesController as categoriesCtrl',
+                  resolve: {
+                    categories: ['MenuDataService', function (MenuDataService) {
+                      return  MenuDataService.getAllCategories();
+                    }]
+              }
+    })
 
-  // *** Set up UI states ***
-  $stateProvider
-
-  // Home page
-  .state('home', {
-    url: '/',
-    templateUrl: 'src/menuapp/templates/home.template.html'
-  })
-
-  // Premade list page
-  .state('categories', {
-    url: '/categories',
-	 component: 'categories',
-    templateUrl: 'src/menuapp/templates/categories.template.html',
-    controller: 'CategoriesController as categoryList',
-    resolve: {
-   categories: ['MenuDataService', function (MenuDataService) {
-        return MenuDataService.getAllCategories();
-      }]
-    }
-  })
-
-  // Item detail
-  .state('items', {
-    url: '/items/{shortName}',
-    templateUrl: 'src/menuapp/templates/items.template.html',
-		 component: 'items',
-       controller: 'ItemsController as itemsCtr',
-  	resolve: {
-     items: ['MenuDataService', function (MenuDataService) {
-	return MenuDataService.getMenuForCategory('L')  }] },
- 
-  });
-  
-      $urlRouterProvider
-     .otherwise('/');
-}
-
-})();
+    .state('categories.items', {
+      url: '/{short_name}/items',
+      templateUrl: 'src/menuapp/templates/items.template.html',
+      controller: 'ItemsController as itemsCtrl',
+      params: {
+        short_name: null
+      },
+      resolve: {
+        items: ['$stateParams', 'categories', 'MenuDataService', function ($stateParams, categories, MenuDataService) {
+          return MenuDataService.getItemsForCategory($stateParams.short_name);
+        }]
+      }
+    });
+    ;
+  }
+ }
+)();

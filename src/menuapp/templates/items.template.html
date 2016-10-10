@@ -1,17 +1,6 @@
-  <div class="row">
-    <ol class="breadcrumb">
-      <li><a href="#">Home</a></li>
-      <li><a href="#/categories">Categories list</a></li>
-      <li class="active">Category items</li>
-    </ol>
-    <div class="col-xs-12">
-     
-            <li ng-repeat="item in itemsCtr.items">
-          <td>{{item.id}}</td>
-          <td>{{item.short_name}}</td>
-          <td>{{item.name}}</td>
-          <td>{{item.description}}</td>
-        </li>
-    
-    </div>
-  </div>
+<div>
+ 
+    <item-list items="itemsCtrl.items"></item-list>
+	
+
+</div>
